@@ -8,6 +8,8 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
+import java.util.ArrayList;
+
 /**
  * Created by 10959 on 2017/2/2.
  */
@@ -17,7 +19,8 @@ public class DrawPoint extends View {
     private Bitmap bitmap;
     private boolean initFlag=false;
     private float lastx=0,lasty=0;
-    private Paint plotPaint;
+    private Paint plotPaint,bestPaint;
+    private ArrayList<Point> map;
     public DrawPoint(Context context, AttributeSet attrs) {
         super(context, attrs);
         linePaint=new Paint();
@@ -28,6 +31,7 @@ public class DrawPoint extends View {
         plotPaint.setStrokeJoin(Paint.Join.ROUND);
         plotPaint.setStrokeWidth(4f);
         plotPaint.setColor(Color.BLUE);
+        bestPaint.setColor(Color.RED);
     }
     private void drawAxis(Canvas canvas){
         float gridX=getWidth()/2,gridY=getHeight()/2;
@@ -64,6 +68,7 @@ public class DrawPoint extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        float w=getWidth()/2.0f,h=getHeight()/2.0f;
         if(!initFlag) {
             initFlag=true;
             bitmap=Bitmap.createBitmap(getWidth(),getHeight(),Bitmap.Config.ARGB_8888);
@@ -73,9 +78,12 @@ public class DrawPoint extends View {
         }
         else {
             Canvas tempcanvas=new Canvas(bitmap);
-            float w=getWidth()/2.0f,h=getHeight()/2.0f;
             tempcanvas.drawCircle(w+lastx*25,h+lasty*25,5,plotPaint);
             canvas.drawBitmap(bitmap,0,0,null);
+        }
+        if(map!=null){
+            for(int i=0;i<map.size();i++)
+                canvas.drawCircle(w+map.get(i).x*25,h-map.get(i).y*25,5,bestPaint);
         }
     }
     public void updatePoint(float x,float y){
@@ -84,5 +92,9 @@ public class DrawPoint extends View {
             lasty=y;
             invalidate();
         }
+    }
+    public void drawBest(ArrayList<Point> p){
+        map=p;
+        invalidate();
     }
 }

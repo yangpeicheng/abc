@@ -25,6 +25,19 @@ public class DTW {
         return matrix[maxS][maxT];
     }
     private static float getDistance(Point X,Point Y){
-        return (X.x-Y.x)*(X.x-Y.x)+(X.y-Y.y)*(X.y-Y.y);
+        return (float) Math.sqrt((X.x-Y.x)*(X.x-Y.x)+(X.y-Y.y)*(X.y-Y.y));
+    }
+    public static float CompareTemplate(DataSegmentation calculated,DataSegmentation template){
+        float result=0.0f;
+        int i=0;
+        while (true){
+            ArrayList<Point> calculatedPoint=calculated.CoordinateChange(i);
+            ArrayList<Point> templatePoint=template.CoordinateChange(i);
+            if (calculatedPoint==null||templatePoint==null)
+                break;
+            result+=DTW.DTWDistance(calculatedPoint,templatePoint);
+            i++;
+        }
+        return result;
     }
 }

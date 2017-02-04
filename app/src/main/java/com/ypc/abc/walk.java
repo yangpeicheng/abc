@@ -2,7 +2,6 @@ package com.ypc.abc;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,8 +11,10 @@ public class walk extends SensorData {
     LpfFilter acclpf=new LpfFilter();
     float[] vacc=new float[3];
     float[] distance=new float[3];
+    float[] lastDistance=new float[3];
     Button endButton;
     GetInteralAcc getInteralAcc=new GetInteralAcc();
+    DataSegmentation srcDataSegmentation=new DataSegmentation();
     Handler handler=new Handler();
     Runnable runnable=new Runnable() {
         @Override
@@ -35,6 +36,9 @@ public class walk extends SensorData {
             public void onClick(View v) {
                 sensorManager.unregisterListener(walk.this);
                 handler.removeCallbacks(runnable);
+                srcDataSegmentation.DataEnd();
+                CompareTemplate compareTemplate=new CompareTemplate(srcDataSegmentation);
+                compareTemplate.findBestTemplate(srcDataSegmentation,plot);
             }
         });
     }
@@ -51,9 +55,12 @@ public class walk extends SensorData {
                     turnFlag=1;
             }
             if(trough.judge()==2){
+                if(different(distance,lastDistance)){
+                    srcDataSegmentation.addSample(distance[0],distance[1],turnFlag);
+                    System.arraycopy(distance,0,lastDistance,0,distance.length);
+                }
                 turnFlag=0;
             }
-
         }
         else {
             distance=getInteralAcc.calculateDistance(VectorOperation.matrixMultiVector(currentRotationMatrix,vacc),lasttime);
@@ -61,8 +68,7 @@ public class walk extends SensorData {
         }
     }
     public void updateDistanceDisplay() {
-        // writeOrientation.writeData(new float[]{1,1});
-        //turnFlag=0;
+        turnFlag=0;
         plot.updatePoint(distance[0], -distance[1]);
     }
     private Runnable updateDistanceDisplayTask = new Runnable() {
@@ -70,4 +76,10 @@ public class walk extends SensorData {
             updateDistanceDisplay();
         }
     };
+    protected boolean different(float [] a,float [] b){
+        if(Math.abs(a[0]-b[0])<0.0001f&&Math.abs(a[1]-b[1])<0.0001f){
+            return false;
+        }
+        return true;
+    }
 }

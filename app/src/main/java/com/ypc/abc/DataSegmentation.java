@@ -47,10 +47,6 @@ public class DataSegmentation {
             C=dataLists.get(start+2).get(0);
             eX=new Point((C.x-A.x)/getDistance(A,C),(C.y-A.y)/getDistance(A,C));
             Point temp=new Point(eX.y,-eX.x);
-           /*if(dotProduct(temp,B)>=0)
-                eY=temp;
-            else
-                eY=new Point(-eX.y,eX.x);*/
             eY=temp;
             for(int i=0;i<2;i++){
                 for(int j=0;j<dataLists.get(i+start).size();j++){
