@@ -27,8 +27,6 @@ public abstract class SensorData extends Activity implements SensorEventListener
     protected float[] gyroscopeOrientation=new float[3];
     protected float[] fusedOrientation = new float[3];
     protected float[] rmAccelMagOrientation=new float[3];
-    protected float[] distance=new float[3];
-    protected float[] lastDistance=new float[3];
     protected long lasttime;
     protected int count=0;
     protected int troughCount=0;

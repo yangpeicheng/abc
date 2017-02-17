@@ -38,6 +38,23 @@ public class GetInteralAcc {
         System.arraycopy(linacc,0,accLast,0,linacc.length);
         return distanceLast;
     }
+    public float[] calculateArmDistance(float[] linacc,long timestamp){
+        if(timestampLast==0){
+            timestampLast=timestamp;
+            System.arraycopy(linacc,0,accLast,0,linacc.length);
+
+            return distanceLast;
+        }
+        dT=(timestamp-timestampLast)*NS2S;
+        timestampLast=timestamp;
+        for(int i=0;i<linacc.length;i++){
+            float tempV=velocityLast[i]+dT*(linacc[i]+accLast[i])/2.0f;
+            this.distanceLast[i]+=dT*(velocityLast[i]+tempV)/2.0f;
+            velocityLast[i]=tempV;
+        }
+        System.arraycopy(linacc,0,accLast,0,linacc.length);
+        return distanceLast;
+    }
     public void Reset(){
         timestampLast=0;
         for(int i=0;i<velocityLast.length;i++){
@@ -46,5 +63,15 @@ public class GetInteralAcc {
     }
     public float[] getDistance(){
         return distanceLast;
+    }
+    public float getMagnitude(float[] data){
+        float result=0;
+        for(int i=0;i<data.length;i++){
+            result+=data[i]*data[i];
+        }
+        return (float)Math.sqrt(result);
+    }
+    public float[] getVelocityLast(){
+        return velocityLast;
     }
 }

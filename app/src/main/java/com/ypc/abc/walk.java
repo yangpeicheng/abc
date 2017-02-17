@@ -19,7 +19,6 @@ public class walk extends SensorData {
     Runnable runnable=new Runnable() {
         @Override
         public void run() {
-            Log.d("distance", String.valueOf(System.currentTimeMillis()));
             handler.postDelayed(this,20);
             calculate();
         }
@@ -43,6 +42,7 @@ public class walk extends SensorData {
         });
     }
     private void calculate(){
+        //System.arraycopy(vAcceleration,0,vacc,0,vAcceleration.length);
         vacc=acclpf.HighPassfliter(vAcceleration);
         if(hasInitialOrientation==false)
             return;

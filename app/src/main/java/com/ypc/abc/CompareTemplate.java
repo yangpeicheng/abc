@@ -1,5 +1,8 @@
 package com.ypc.abc;
 
+import android.util.Log;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 
 /**
@@ -10,6 +13,7 @@ public class CompareTemplate {
     private int templateNum,templateLen;
     private Point[][] templatePoints;
     private DataSegmentation[] templates;
+    private boolean initTemplateFlag=false;
     public CompareTemplate(DataSegmentation dataSegmentation){
         initTemplate(dataSegmentation);
     }
@@ -20,6 +24,7 @@ public class CompareTemplate {
         String[] first=configFile.readNext();
         if(first==null||first.length!=2)
             return;
+        Log.d("ooooo","ok");
         templateNum=Integer.parseInt(first[0]);
         templateLen=Integer.parseInt(first[1]);
         if(templateNum==0||templateLen==0)
@@ -42,15 +47,18 @@ public class CompareTemplate {
                 float avgX=(templatePoints[k][i+1].x-templatePoints[k][i].x)/size;
                 float avgY=(templatePoints[k][i+1].y-templatePoints[k][i].y)/size;
                 templates[k].addSample(templatePoints[k][i].x,templatePoints[k][i].y,1);
-                for(int j=1;j<size;j++){
+                for(int j=1;j<size+1;j++){
                     templates[k].addSample(templatePoints[k][i].x+j*avgX,templatePoints[k][i].y+j*avgY,0);
                 }
             }
         }
         for(int i=0;i<templates.length;i++)
             templates[i].DataEnd();
+        initTemplateFlag=true;
     }
     public void findBestTemplate(DataSegmentation dataSegmentation,DrawPoint drawPoint){
+        if(!initTemplateFlag)
+            return;
         int bestNo=-1;
         float minDistance=999999;
         for(int i=0;i<templates.length;i++){
@@ -65,6 +73,7 @@ public class CompareTemplate {
             for(int j=0;j<templates[bestNo].dataLists.get(k).size();j++)
                 bestPoints.add(templates[bestNo].dataLists.get(k).get(j));
         }
+        Log.d("length:",String.valueOf(bestPoints.get(3).x));
         drawPoint.drawBest(bestPoints);
     }
 }

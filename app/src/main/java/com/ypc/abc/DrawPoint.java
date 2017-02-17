@@ -31,6 +31,7 @@ public class DrawPoint extends View {
         plotPaint.setStrokeJoin(Paint.Join.ROUND);
         plotPaint.setStrokeWidth(4f);
         plotPaint.setColor(Color.BLUE);
+        bestPaint=new Paint();
         bestPaint.setColor(Color.RED);
     }
     private void drawAxis(Canvas canvas){

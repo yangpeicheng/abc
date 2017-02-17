@@ -18,8 +18,8 @@ public class ReadCsv {
     private String [] data;
     CSVReader reader;
     public ReadCsv(String filename){
-       // String filePath=baseDir+ File.separator+foldername+File.separator+filename;
-        String filePath=baseDir+ File.separator+filename;
+       String filePath=baseDir+ File.separator+foldername+File.separator+filename;
+        //String filePath=baseDir+ File.separator+filename;
         File f=new File(filePath);
         if(f.exists() && !f.isDirectory()){
             try {
