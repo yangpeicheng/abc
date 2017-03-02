@@ -65,6 +65,21 @@ public class Trough {
         }
         return true;
     }
+    private boolean isMax(){
+        for(int i=0;i<midnum-2;i++){
+            if(dataList.get(i)>dataList.get(i+2))
+                return false;
+            else
+                continue;
+        }
+        for(int i=midnum;i<dataList.size()-2;i++){
+            if(dataList.get(i)<dataList.get(i+2))
+                return false;
+            else
+                continue;
+        }
+        return true;
+    }
     private boolean ArmisMin(){
         for(int i=0;i<midnum;i++){
             if(dataList.get(i)<dataList.get(i+1))

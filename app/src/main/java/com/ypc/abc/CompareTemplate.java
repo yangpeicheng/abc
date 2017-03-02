@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 
 public class CompareTemplate {
-    private int templateNum,templateLen;
+    private int templateNum;
     private Point[][] templatePoints;
     private DataSegmentation[] templates;
     private boolean initTemplateFlag=false;
@@ -22,16 +22,20 @@ public class CompareTemplate {
         if(configFile==null)
             return;
         String[] first=configFile.readNext();
-        if(first==null||first.length!=2)
+        if(first==null||first.length!=1)
             return;
         Log.d("ooooo","ok");
         templateNum=Integer.parseInt(first[0]);
-        templateLen=Integer.parseInt(first[1]);
-        if(templateNum==0||templateLen==0)
+        //templateLen=Integer.parseInt(first[1]);
+        if(templateNum==0/*||templateLen==0*/)
             return;
         templatePoints=new Point[templateNum][];
         templates=new DataSegmentation[templateNum];
         for(int i=0;i<templateNum;i++){
+            String[] temp=configFile.readNext();
+            if(temp==null||temp.length!=1)
+                break;
+            int templateLen=Integer.parseInt(temp[0]);
             templates[i]=new DataSegmentation();
             templatePoints[i]=new Point[templateLen];
             for(int j=0;j<templateLen;j++) {
@@ -56,9 +60,9 @@ public class CompareTemplate {
             templates[i].DataEnd();
         initTemplateFlag=true;
     }
-    public void findBestTemplate(DataSegmentation dataSegmentation,DrawPoint drawPoint){
+    public boolean findBestTemplate(DataSegmentation dataSegmentation,DrawPoint drawPoint){
         if(!initTemplateFlag)
-            return;
+            return false;
         int bestNo=-1;
         float minDistance=999999;
         for(int i=0;i<templates.length;i++){
@@ -68,12 +72,15 @@ public class CompareTemplate {
                 minDistance=tempDistance;
             }
         }
+        if(bestNo==-1)
+            return false;
         ArrayList<Point> bestPoints=new ArrayList<Point>();
         for(int k=0;k<templates[bestNo].dataLists.size();k++){
             for(int j=0;j<templates[bestNo].dataLists.get(k).size();j++)
                 bestPoints.add(templates[bestNo].dataLists.get(k).get(j));
         }
-        Log.d("length:",String.valueOf(bestPoints.get(3).x));
+        //Log.d("length:",String.valueOf(bestPoints.get(3).x));
         drawPoint.drawBest(bestPoints);
+        return true;
     }
 }

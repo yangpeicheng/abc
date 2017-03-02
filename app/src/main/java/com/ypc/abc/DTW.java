@@ -30,6 +30,8 @@ public class DTW {
     public static float CompareTemplate(DataSegmentation calculated,DataSegmentation template){
         float result=0.0f;
         int i=0;
+        if(calculated.dataLists.size()!=template.dataLists.size())
+            return 999999;
         while (true){
             ArrayList<Point> calculatedPoint=calculated.CoordinateChange(i);
             ArrayList<Point> templatePoint=template.CoordinateChange(i);

@@ -90,7 +90,7 @@ public class arm extends SensorData {
         }
         if(trough.armJudge())
             lockFlag=true;
-        if((variance<0.010f&&accelerationMagnitude<0.1f)||lockFlag) {
+        if((variance<0.010f&&accelerationMagnitude<0.4f)||lockFlag) {
             getInteralAcc.Reset();
         }
         else {
@@ -104,7 +104,7 @@ public class arm extends SensorData {
             data3DSegmentation.addSample(distance[0],distance[1],distance[2],trough.armJudge()?1:0);
         }
         System.arraycopy(distance,0,lastdistance,0,distance.length);
-        writeHandler.post(updateDataTask);
+        //writeHandler.post(updateDataTask);
         //drawContour.updatePoint(new float[]{0.2f,0.2f,0.2f});
         uiHandler.post(updateDistanceDisplayTask);
     }
@@ -146,17 +146,24 @@ public class arm extends SensorData {
                 writeTorsoCsv.closeFile();
                 writeDistance.closeFile();
                 writeVelocity.closeFile();
-                data3DSegmentation.DataEnd();
+                if(getMagnitude(distance)>1){
+                    Toast.makeText(arm.this,"error",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+               // data3DSegmentation.DataEnd();
                 Compare3DTemplate compare3DTemplate=new Compare3DTemplate(data3DSegmentation);
                 int index=compare3DTemplate.findbest(drawContour);
                 if(index==-1){
                     Toast.makeText(arm.this,"匹配错误",Toast.LENGTH_SHORT).show();
                 }
                 else if(index==0){
-                    Toast.makeText(arm.this,"锐角",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(arm.this,"Z",Toast.LENGTH_SHORT).show();
                 }
                 else if(index==1){
-                    Toast.makeText(arm.this,"直角",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(arm.this,"U",Toast.LENGTH_SHORT).show();
+                }
+                else if(index==2){
+                    Toast.makeText(arm.this,"Opening the fridge",Toast.LENGTH_SHORT).show();
                 }
             }
         });

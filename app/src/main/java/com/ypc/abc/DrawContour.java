@@ -45,12 +45,13 @@ public class DrawContour extends View {
         canvas.drawLine(gridX  ,0,gridX,gridY,linePaint);
         canvas.drawLine(gridX,0,gridX-10,16,linePaint);
         canvas.drawLine(gridX,0,gridX+10,16,linePaint);
-        canvas.drawText("Y",gridX+30,30,linePaint);
+        canvas.drawText("Z",gridX+30,30,linePaint);
         canvas.drawLine(gridX,gridY,getWidth(),gridY,linePaint);
         canvas.drawLine(getWidth(),gridY,getWidth()-16,gridY-10,linePaint);
         canvas.drawLine(getWidth(),gridY,getWidth()-16,gridY+10,linePaint);
-        canvas.drawText("X",getWidth()-30,gridY-30,linePaint);
-        canvas.drawLine(gridX,gridY,gridX-310,gridY+310,linePaint);
+        canvas.drawText("Y",getWidth()-20,gridY-30,linePaint);
+        canvas.drawLine(gridX,gridY,gridX-245,gridY+245,linePaint);
+        canvas.drawText("X",gridX-280,gridY+245,linePaint);
         for(int i=0;i<10;i++) {
             if (gridX + (i + 1) * 50 < getWidth() - 50) {
                 canvas.drawLine(gridX + (i + 1) * 50, gridY, gridX + (i + 1) * 50, gridY - 10, linePaint);
@@ -67,7 +68,7 @@ public class DrawContour extends View {
             else
                 break;
         }
-        for(int i=0;i<8;i++) {
+        for(int i=0;i<6;i++) {
             if (gridX - (i + 1) * 35.36 >= 50) {
                 canvas.drawLine(gridX - (i + 1) * 35f,gridY + (i + 1) * 35f, gridX - (i + 1) * 35f+7,gridY +(i + 1) * 35f+7, linePaint);
                 canvas.drawText(String.format("%.1f",0.1f*(i+1)),gridX - (i + 1) * 35f-17.68f,gridY +(i + 1) * 35f-17.68f,linePaint);
@@ -75,6 +76,8 @@ public class DrawContour extends View {
             else
                 break;
         }
+        canvas.drawLine(gridX - 7 * 35f,gridY + 7 * 35f, gridX - 7 * 35f+16,gridY +7 * 35f, linePaint);
+        canvas.drawLine(gridX - 7 * 35f,gridY + 7 * 35f, gridX - 7 * 35f,gridY +7 * 35f-16, linePaint);
     }
 
     @Override

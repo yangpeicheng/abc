@@ -1,5 +1,7 @@
 package com.ypc.abc;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -53,14 +55,12 @@ public class Data3DSegmentation {
         B=dataLists.get(start+1).get(0);
         C=dataLists.get(start+2).get(0);
         float lengthAC=getDistance(A,C);
-        if(lengthAC<0.0000001f){
-            eX=new Point3D(1,0,0);
-        }
-        else
-            eX=new Point3D((C.x-A.x)/lengthAC,(C.y-A.y)/lengthAC,(C.z-A.z)/lengthAC);
+        eX=new Point3D((C.x-A.x)/lengthAC,(C.y-A.y)/lengthAC,(C.z-A.z)/lengthAC);
+        Log.d("ex",String.format("%f,%f,%f",eX.x,eX.y, eX.z));
         AB=new Point3D(B.x-A.x,B.y-A.y,B.z-A.z);
         Point3D temp=minusPoint(AB,multiple(eX,dotProduct(AB,eX)));
-        eY=multiple(temp,getLength(temp));
+        eY=multiple(temp,1/getLength(temp));
+        Log.d("eY",String.format("%f,%f,%f",eY.x,eY.y, eY.z));
         for(int i=0;i<2;i++){
             for(int j=0;j<dataLists.get(i+start).size();j++){
                 Point3D t=dataLists.get(i+start).get(j);
@@ -68,7 +68,6 @@ public class Data3DSegmentation {
                 result.add(new Point(dotProduct(k,eX),dotProduct(k,eY)));
             }
         }
-        //Log.d("point",String.format("%f , %f",result.get(1).x,result.get(1).y));
         return result;
     }
     public float getDistance(Point3D X,Point3D Y){
@@ -101,10 +100,11 @@ public class Data3DSegmentation {
     }
     public void WriteData(String name){
         WriteCsv writeCsv=new WriteCsv(name);
-        for(int i=0;i<dataLists.size();i++){
-            LinkedList<Point3D> temp=dataLists.get(i);
+        for(int i=0;i<dataLists.size()-2;i++){
+            ArrayList<Point> temp=this.CoordinateChange(i);
+            //LinkedList<Point3D> temp=dataLists.get(i);
             for(int j=0;j<temp.size();j++){
-                writeCsv.writeData(new float[]{temp.get(j).x,temp.get(j).y,temp.get(j).z});
+                writeCsv.writeData(new float[]{temp.get(j).x,temp.get(j).y});
             }
             writeCsv.writeData(new float[]{-1,-1,-1});
         }

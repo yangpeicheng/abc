@@ -2,20 +2,30 @@ package com.ypc.abc;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.res.TypedArrayUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class walk extends SensorData {
     DrawPoint plot;
     LpfFilter acclpf=new LpfFilter();
     float[] vacc=new float[3];
+    float[] gravity=new float[3];
+    LpfFilter gravitylpf=new LpfFilter();
     float[] distance=new float[3];
+    float[] velocity=new float[3];
     float[] lastDistance=new float[3];
+    float[] geoAcc=new float[3];
     Button endButton;
     GetInteralAcc getInteralAcc=new GetInteralAcc();
     DataSegmentation srcDataSegmentation=new DataSegmentation();
     Handler handler=new Handler();
+    Handler writerHandler=new Handler();
+    private WriteCsv writeAcceleration=new WriteCsv("Acceleration.csv");
+    private WriteCsv writeDistance=new WriteCsv("distance.csv");
+    private WriteCsv writeVelocity=new WriteCsv("velocity.csv");
     Runnable runnable=new Runnable() {
         @Override
         public void run() {
@@ -37,13 +47,16 @@ public class walk extends SensorData {
                 handler.removeCallbacks(runnable);
                 srcDataSegmentation.DataEnd();
                 CompareTemplate compareTemplate=new CompareTemplate(srcDataSegmentation);
-                compareTemplate.findBestTemplate(srcDataSegmentation,plot);
+                boolean result=compareTemplate.findBestTemplate(srcDataSegmentation,plot);
+                if(!result)
+                    Toast.makeText(walk.this,"error",Toast.LENGTH_SHORT);
             }
         });
     }
     private void calculate(){
         //System.arraycopy(vAcceleration,0,vacc,0,vAcceleration.length);
         vacc=acclpf.HighPassfliter(vAcceleration);
+        gravity=gravitylpf.LowPassfliter(vAcceleration);
         if(hasInitialOrientation==false)
             return;
         count++;
@@ -63,9 +76,12 @@ public class walk extends SensorData {
             }
         }
         else {
+            geoAcc=VectorOperation.matrixMultiVector(currentRotationMatrix,vacc);
             distance=getInteralAcc.calculateDistance(VectorOperation.matrixMultiVector(currentRotationMatrix,vacc),lasttime);
+            velocity=getInteralAcc.getVelocityLast();
             handler.post(updateDistanceDisplayTask);
         }
+        writerHandler.post(updateDataTask);
     }
     public void updateDistanceDisplay() {
         turnFlag=0;
@@ -82,4 +98,16 @@ public class walk extends SensorData {
         }
         return true;
     }
+    public void writeData(){
+        writeDistance.writeData(distance);
+        writeVelocity.writeData(velocity);
+        writeAcceleration.writeData(new float[]{geoAcc[0],geoAcc[1],geoAcc[2],trough.judge(),fusedOrientation[1],(float)Math.sqrt(gravity[0]*gravity[0]
+        +gravity[1]*gravity[1]+gravity[2]*gravity[2])});
+    }
+    private Runnable updateDataTask=new Runnable() {
+        @Override
+        public void run() {
+            writeData();
+        }
+    };
 }

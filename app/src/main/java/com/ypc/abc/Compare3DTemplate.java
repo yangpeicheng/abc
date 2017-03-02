@@ -13,6 +13,7 @@ public class Compare3DTemplate {
     private Data3DSegmentation srcData3DSegmentation;
     private Point3D[][] templatePoints;
     private boolean templateInitFlag=false;
+    private WriteCsv resultOfCompare=new WriteCsv("result.csv");
     public Compare3DTemplate(Data3DSegmentation data3DSegmentation){
         srcData3DSegmentation=data3DSegmentation;
         iniTemplate(data3DSegmentation.getSize());
@@ -74,17 +75,16 @@ public class Compare3DTemplate {
         int bestNo=-1;
         float minDistance=99999;
         Log.d("length",String.valueOf(srcData3DSegmentation.dataLists.size()));
-        srcData3DSegmentation.WriteData("src.csv");
-        templates[0].WriteData("first.csv");
-        templates[1].WriteData("second.csv");
         for(int i=0;i<templates.length;i++){
             float tempDistance=DTW.Compare3DTemplate(srcData3DSegmentation,templates[i]);
             Log.d("value",String.valueOf(tempDistance));
+            resultOfCompare.writeData(new float[]{tempDistance});
             if(tempDistance<minDistance){
                 bestNo=i;
                 minDistance=tempDistance;
             }
         }
+        resultOfCompare.closeFile();
         Log.d("index",String.valueOf(bestNo));
         if(bestNo!=-1)
             drawContour.drawbest(templatePoints[bestNo]);
